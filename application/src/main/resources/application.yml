@@ -19,7 +19,7 @@ spring:
   data:
     mongodb:
       database: test
-      uri: mongodb://localhost:30000
+      uri: mongodb+srv://mongo2020-us-archive.payx-demo.com/?ssl=false
       key:
         vault:
           database: "encryption"
