@@ -16,7 +16,7 @@ steps:
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
-    Dockerfile: '**/build/Dockerfile'
+    Dockerfile: 'application/build/Dockerfile'
     gradleWrapperFile: 'gradlew'
     gradleOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
