@@ -25,3 +25,5 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
     tasks: 'application:build'
+    tags: |
+      tag1
