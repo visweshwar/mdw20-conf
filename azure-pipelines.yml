@@ -13,10 +13,6 @@ steps:
 - task: Gradle@2
   inputs:
     workingDirectory: ''
-- task: Docker@2
-  inputs:
-    command: 'buildAndPush'
-    Dockerfile: 'application/build/Dockerfile'
     gradleWrapperFile: 'gradlew'
     gradleOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
@@ -25,3 +21,10 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
     tasks: 'application:build'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'mdw20registryservice'
+    repository: 'app'
+    command: 'buildAndPush'
+    Dockerfile: 'application/build/Dockerfile'
+    
