@@ -14,7 +14,7 @@ variables:
   dockerRegistryServiceConnection: '973a8395-cf97-4227-b3a3-7fe3e7f27a39'
   imageRepository: 'visweshwarmdw'
   containerRegistry: 'mdw20payxregistry.azurecr.io'
-  dockerfilePath: '**/Dockerfile'
+  dockerfilePath: 'application/build/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'mdw20payxregistrydff1-auth'
 
@@ -31,7 +31,17 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+    - task: Gradle@2
+      inputs:
+        gradleWrapperFile: 'gradlew'
+        workingDirectory: ''
+        tasks: 'application:build'
+        publishJUnitResults: true
+        testResultsFiles: '**/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        sonarQubeRunAnalysis: false
     - task: Docker@2
+
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
