@@ -31,6 +31,9 @@ public class Employee {
 	private String employeeId;
 	private String firstName;
 	private String lastName;
+	private int ssn;
+	private String bloodType;
+	private String phone;
 	private Client client;
 
 	public Employee() {
@@ -58,6 +61,30 @@ public class Employee {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public int getSsn() {
+		return ssn;
+	}
+
+	public void setSsn(int ssn) {
+		this.ssn = ssn;
+	}
+
+	public String getBloodType() {
+		return bloodType;
+	}
+
+	public void setBloodType(String bloodType) {
+		this.bloodType = bloodType;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public Client getClient() {

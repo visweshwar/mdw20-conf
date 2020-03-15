@@ -18,15 +18,26 @@
 
 package com.paychex.mdw20.hrapplication.config;
 
+import com.mongodb.AutoEncryptionSettings;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoDriverInformation;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.internal.MongoClientImpl;
+import com.mongodb.client.model.CreateCollectionOptions;
+import com.mongodb.client.model.ValidationOptions;
 import com.mongodb.internal.build.MongoDriverVersion;
 import com.paychex.mdw20.hrapplication.db.BinaryToBsonBinaryConverter;
 import com.paychex.mdw20.hrapplication.db.BsonBinaryToBinaryConverter;
+import com.paychex.mdw20.hrapplication.entity.schema.EmployeeEncryptionSchema;
+import com.paychex.mdw20.hrapplication.keymangement.KMSHandler;
+import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.bson.BsonDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.convert.CustomConversions;
@@ -45,10 +56,12 @@ import static java.lang.System.getProperty;
 @EnableMongoRepositories(basePackages = "com.paychex.mdw20.hrapplication.entity")
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
-	@Value(value = "${spring.data.mongodb.database}")
-	private String DB_DATABASE;
 	@Value(value = "${spring.data.mongodb.uri}")
 	private String DB_CONNECTION;
+	@Value(value = "${spring.data.mongodb.database}")
+	private String DB_DATABASE;
+	@Autowired
+	private KMSHandler kmsHandler;
 
 	private MongoDriverInformation getMongoDriverInfo() {
 		return MongoDriverInformation.builder().driverName(MongoDriverVersion.NAME).driverVersion(
@@ -57,10 +70,32 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 						getProperty("java.runtime.version", "unknown-version"))).build();
 	}
 
-	private MongoClientSettings getMongoClientSettings() {
+	//	private MongoClientSettings getMongoClientSettings() {
+	//
+	//		//		kmsHandler.buildOrValidateVault();
+	//		return MongoClientSettings.builder().applyConnectionString(new ConnectionString(DB_CONNECTION)).build();
+	//	}
 
-		//		kmsHandler.buildOrValidateVault();
-		return MongoClientSettings.builder().applyConnectionString(new ConnectionString(DB_CONNECTION)).build();
+	private MongoClientSettings getAutoEncryptMongoClientSettings() {
+
+		return MongoClientSettings.builder().autoEncryptionSettings(autoEncryptionSettings()).applyConnectionString(
+				new ConnectionString(DB_CONNECTION)).build();
+	}
+
+	private AutoEncryptionSettings autoEncryptionSettings() {
+
+		return AutoEncryptionSettings.builder().kmsProviders(kmsHandler.getKMSMap()).extraOptions(
+				kmsHandler.getExtraOptsMap()).keyVaultNamespace(kmsHandler.getEncryptionCollectionName()).schemaMap(
+				getJsonSchemaMap()).build();
+	}
+
+	private Map<String, BsonDocument> getJsonSchemaMap() {
+
+		return Stream.of(new AbstractMap.SimpleEntry<>("test.employees",
+
+				BsonDocument.parse(
+						EmployeeEncryptionSchema.getDocument(kmsHandler.getEncryptionKeyBase64()).toJson()))).collect(
+				Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	/**
@@ -72,10 +107,16 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 		return customConversions;
 	}
 
+
 	@Override
 	public MongoClient mongoClient() {
-		//		kmsHandler.buildOrValidateVault();
-		MongoClient mongoClient = new MongoClientImpl(getMongoClientSettings(), getMongoDriverInfo());
+		kmsHandler.buildOrValidateVault();
+		MongoClient mongoClient = new MongoClientImpl(getAutoEncryptMongoClientSettings(), getMongoDriverInfo());
+		CreateCollectionOptions createCollectionOptions = new CreateCollectionOptions();
+		ValidationOptions validationOptions = new ValidationOptions();
+		validationOptions.validator(EmployeeEncryptionSchema.getDocument(kmsHandler.getEncryptionKeyBase64()));
+		createCollectionOptions.validationOptions(validationOptions);
+
 		return mongoClient;
 	}
 

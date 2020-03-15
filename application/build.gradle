@@ -37,9 +37,11 @@ repositories {
 
 task copyDocker(dependsOn: build, type: Copy) {
     copy {
-        from "./"
+        from "./docker"
         into "$buildDir"
         include "Dockerfile"
+        include "supervisor.conf"
+        include "script.sh"
     }
 }
 dependencies {
@@ -47,6 +49,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    compile(
+            [
+                    'org.mongodb:mongodb-crypt:1.0.0'
+            ]
+    )
 
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
 //    compile group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0-SNAPSHOT'
