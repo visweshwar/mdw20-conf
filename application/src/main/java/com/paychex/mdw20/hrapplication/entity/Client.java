@@ -29,8 +29,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Client {
 
 	private String clientId;
-
 	private String clientName;
+	private boolean premium;
 
 	public Client(String clientName) {
 		this.clientName = clientName;

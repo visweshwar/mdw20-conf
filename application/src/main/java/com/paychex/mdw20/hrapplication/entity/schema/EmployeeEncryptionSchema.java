@@ -28,7 +28,8 @@ public class EmployeeEncryptionSchema {
 		document.append("bsonType", "object").append("properties",
 				new Document().append("ssn", buildEncryptedField("int", true, keyId)).append("bloodType",
 						buildEncryptedField("string", false, keyId)).append("phone",
-						buildEncryptedField("string", false, keyId)));
+						buildEncryptedField("string", false, keyId)).append("salary",
+						buildEncryptedField("double", false, keyId)));
 
 		return document;
 	}
