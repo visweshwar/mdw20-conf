@@ -31,7 +31,7 @@ public class Employee {
 
 	@Indexed(unique = true, name = "ees_idx_ee_id")
 	private String employeeId;
-	@Indexed(unique = true, name = "ees_idx_ee_active")
+	@Indexed(unique = false, name = "ees_idx_ee_active")
 	private boolean active;
 	private String firstName;
 	private String lastName;
