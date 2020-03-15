@@ -14,7 +14,7 @@ variables:
   dockerRegistryServiceConnection: 'f31cfe96-1f05-4323-943d-88304f450c58'
   imageRepository: 'mdw20'
   containerRegistry: 'payxdemo.azurecr.io'
-  dockerfilePath: '**/application/Dockerfile'
+  dockerfilePath: '**/application/build/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'payxdemo3fca-auth'
 
