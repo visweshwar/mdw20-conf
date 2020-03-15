@@ -1,16 +1,16 @@
 apiVersion : apps/v1beta1
 kind: Deployment
 metadata:
-  name: visweshwarmdwApp
+  name: mdw20-app
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: visweshwarmdwApp
+        app: mdw20-app
     spec:
       containers:
-        - name: visweshwarmdwApp
-          image: mdw20payxregistry.azurecr.io/visweshwarmdw
+        - name: mdw20-app
+          image: payxdemo.azurecr.io/mdw20-app
           ports:
             - containerPort: 8080
