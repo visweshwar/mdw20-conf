@@ -4,7 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-app.log
+app.log*
 
 ### STS ###
 .apt_generated
@@ -21,6 +21,7 @@ app.log
 *.iml
 *.ipr
 out/
+*.gz
 
 ### NetBeans ###
 /nbproject/private/
