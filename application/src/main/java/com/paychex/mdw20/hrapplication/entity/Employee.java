@@ -19,6 +19,7 @@
 
 package com.paychex.mdw20.hrapplication.entity;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /*
@@ -28,15 +29,28 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "employees")
 public class Employee {
 
+	@Indexed(unique = true, name = "ees_idx_ee_id")
 	private String employeeId;
+	@Indexed(unique = true, name = "ees_idx_ee_active")
+	private boolean active;
 	private String firstName;
 	private String lastName;
 	private int ssn;
 	private String bloodType;
 	private String phone;
-	private Client client;
+	private String clientId;
+	private Double salary;
+	private Countries country;
 
 	public Employee() {
+	}
+
+	public Number getSalary() {
+		return salary;
+	}
+
+	public void setSalary(Double salary) {
+		this.salary = salary;
 	}
 
 	public String getEmployeeId() {
@@ -45,6 +59,14 @@ public class Employee {
 
 	public void setEmployeeId(String employeeId) {
 		this.employeeId = employeeId;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public String getFirstName() {
@@ -87,11 +109,20 @@ public class Employee {
 		this.phone = phone;
 	}
 
-	public Client getClient() {
-		return client;
+	public String getClientId() {
+		return clientId;
 	}
 
-	public void setClient(Client client) {
-		this.client = client;
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public Countries getCountry() {
+		return country;
+	}
+
+	public void setCountry(Countries country) {
+		this.country = country;
 	}
 }
+
