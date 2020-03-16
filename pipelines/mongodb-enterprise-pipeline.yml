@@ -11,7 +11,7 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'b4de125d-d289-4110-a553-75443a0e9afd'
-  imageRepository: 'mongodbenterprise'
+  imageRepository: 'mongodb-enterprise'
   containerRegistry: 'payxdemo.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/mongodb-enterprise/docker/Dockerfile'
   tag: '$(Build.BuildId)'
