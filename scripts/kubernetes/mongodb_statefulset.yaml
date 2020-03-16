@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: STATEFULSET_NAME
+spec:
+  selector:
+    matchLabels:
+      app: STATEFULSET_NAME
+  serviceName: STATEFULSET_NAME
+  replicas: NUMBER_OF_NODES
+  template:
+    metadata:
+      labels:
+        app: STATEFULSET_NAME
+        replica-set: REPLICA_SET_NAME
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongod
+          image: payxdemo.azurecr.io/mongodb-enterprise:55
+          command:
+            - mongod
+            - MONGOD_STARTUP_FLAG
+            - --replSet
+            - REPLICA_SET_NAME
+            - --dbpath
+            - /data/db
+            - --port
+            - "MONGOD_PORT"
+            - --bind_ip_all
+          ports:
+            - containerPort: MONGOD_PORT
+              name: mongo
+          volumeMounts:
+            - name: STATEFULSET_NAME
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: STATEFULSET_NAME
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: MONGOD_AZ_STORAGE_CLASS
+        resources:
+          requests:
+            storage: MONGOD_STORAGE_SIZE
