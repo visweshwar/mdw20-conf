@@ -28,15 +28,42 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "clients")
 public class Client {
 
+	//TODO Add indexes
 	private String clientId;
 	private String clientName;
 	private boolean premium;
+	private String address;
+	private Countries country;
 
 	public Client(String clientName) {
 		this.clientName = clientName;
 	}
 
 	public Client() {
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Countries getCountry() {
+		return country;
+	}
+
+	public void setCountry(Countries country) {
+		this.country = country;
+	}
+
+	public boolean isPremium() {
+		return premium;
+	}
+
+	public void setPremium(boolean premium) {
+		this.premium = premium;
 	}
 
 	public String getClientId() {

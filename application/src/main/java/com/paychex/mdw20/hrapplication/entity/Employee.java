@@ -19,6 +19,7 @@
 
 package com.paychex.mdw20.hrapplication.entity;
 
+import java.util.Date;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -41,8 +42,17 @@ public class Employee {
 	private String clientId;
 	private Double salary;
 	private Countries country;
+	private Date dob;
 
 	public Employee() {
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
 	}
 
 	public Number getSalary() {
