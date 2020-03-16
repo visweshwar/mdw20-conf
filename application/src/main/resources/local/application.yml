@@ -21,8 +21,8 @@ spring:
   data:
     mongodb:
       database: test
-      #uri: mongodb://mdw20.payx-demo.com:27017
-      uri: mongodb://localhost:30000
+      uri: mongodb://mdw20.payx-demo.com:27017
+      #uri: mongodb://localhost:30000
       key:
         vault:
           database: "encryption"
