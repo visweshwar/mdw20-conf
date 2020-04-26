@@ -19,17 +19,16 @@
 
 package com.paychex.mdw20.hrapplication.controller;
 
-import com.paychex.mdw20.hrapplication.entity.Employee;
+import com.paychex.mdw20.hrapplication.model.EmployeeModel;
 import com.paychex.mdw20.hrapplication.service.EmployeeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/ee")
+@RequestMapping(value = "/api")
 @Tag(name = "Employee", description = "Operations about employee")
 public class EmployeeController {
 
@@ -38,21 +37,26 @@ public class EmployeeController {
 
 	@GetMapping(value = "/employee/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Employee> getEmployee(@PathVariable(value = "id") String id) {
-		return new ResponseEntity<Employee>(employeeService.getEmployeeById(id), HttpStatus.OK);
+	public ResponseEntity<EmployeeModel> getEmployee(@PathVariable(value = "id") String id) {
+		return new ResponseEntity<EmployeeModel>(employeeService.getEmployeeById(id), HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/employee", consumes = "application/json")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-		return new ResponseEntity<>(employeeService.createEmployee(employee), HttpStatus.CREATED);
+	public ResponseEntity<EmployeeModel> createEmployee(@RequestBody EmployeeModel employee) {
+		return new ResponseEntity<EmployeeModel>(employeeService.createEmployee(employee), HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/employee/{id}", consumes = "application/json")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee,
-			@PathVariable(value = "id") UUID id) {
-		return new ResponseEntity<>(employeeService.updateEmployee(employee, id), HttpStatus.OK);
+	public ResponseEntity<EmployeeModel> updateEmployee(@RequestBody EmployeeModel employee,
+			@PathVariable(value = "id") String id) {
+
+		if (employeeService.updateEmployee(employee, id)) {
+			return new ResponseEntity<EmployeeModel>(employeeService.getEmployeeById(id), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<EmployeeModel>(employeeService.getEmployeeById(id), HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@DeleteMapping(value = "/employee/{id}")

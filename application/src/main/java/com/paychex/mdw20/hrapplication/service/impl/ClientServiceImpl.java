@@ -20,9 +20,13 @@
 package com.paychex.mdw20.hrapplication.service.impl;
 
 import com.paychex.mdw20.hrapplication.entity.Client;
-import com.paychex.mdw20.hrapplication.entity.ClientRepository;
+import com.paychex.mdw20.hrapplication.entity.repository.ClientRepository;
+import com.paychex.mdw20.hrapplication.model.ClientModel;
 import com.paychex.mdw20.hrapplication.service.ClientService;
 import java.util.UUID;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,22 +37,40 @@ import org.springframework.stereotype.Service;
 @Service
 public class ClientServiceImpl implements ClientService {
 
+	Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
+
 	@Autowired
 	private ClientRepository clientRepository;
 
 	@Override
-	public Client getClientById(String id) {
-		return clientRepository.findByClientId(id);
+	public ClientModel getClientById(String id) {
+		Client clt = clientRepository.findByClientId(id);
+		ModelMapper modelMapper = new ModelMapper();
+		return modelMapper.map(clt, ClientModel.class);
 	}
 
 	@Override
-	public Client createClient(Client client) {
-		return clientRepository.insert(client);
+	public ClientModel createClient(Client client) {
+		client.setClientId(UUID.randomUUID().toString());
+		Client clt = clientRepository.insert(client);
+		ModelMapper modelMapper = new ModelMapper();
+		return modelMapper.map(clt, ClientModel.class);
+
 	}
 
 	@Override
-	public Client updateClient(Client client, UUID id) {
-		return clientRepository.save(client);
+	public boolean updateClient(Client client, String id) {
+		Client clientEntity = clientRepository.findByClientId(id);
+		Client finalClient = null;
+		try {
+			finalClient = (Client) clientEntity.clone();
+		} catch (CloneNotSupportedException e) {
+			logger.error(e.getMessage());
+		}
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.map(client, finalClient);
+
+		return clientRepository.doUpdate(clientEntity, finalClient);
 	}
 
 	@Override

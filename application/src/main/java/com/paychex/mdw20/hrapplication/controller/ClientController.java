@@ -20,9 +20,9 @@
 package com.paychex.mdw20.hrapplication.controller;
 
 import com.paychex.mdw20.hrapplication.entity.Client;
+import com.paychex.mdw20.hrapplication.model.ClientModel;
 import com.paychex.mdw20.hrapplication.service.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,20 +42,25 @@ public class ClientController {
 
 	@GetMapping(value = "/client/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Client> getClient(@PathVariable(value = "id") String id) {
-		return new ResponseEntity<Client>(clientService.getClientById(id), HttpStatus.OK);
+	public ResponseEntity<ClientModel> getClient(@PathVariable(value = "id") String id) {
+		return new ResponseEntity<ClientModel>(clientService.getClientById(id), HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/client", consumes = "application/json")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Client> createClient(@RequestBody Client client) {
-		return new ResponseEntity<>(clientService.createClient(client), HttpStatus.CREATED);
+	public ResponseEntity<ClientModel> createClient(@RequestBody Client client) {
+		return new ResponseEntity<ClientModel>(clientService.createClient(client), HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/client/{id}", consumes = "application/json")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Client> updateClient(@RequestBody Client client, @PathVariable(value = "id") UUID id) {
-		return new ResponseEntity<>(clientService.updateClient(client, id), HttpStatus.OK);
+	public ResponseEntity<ClientModel> updateClient(@RequestBody Client client, @PathVariable(value = "id") String id) {
+
+		if (clientService.updateClient(client, id)) {
+			return new ResponseEntity<ClientModel>(clientService.getClientById(id), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<ClientModel>(clientService.getClientById(id), HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@DeleteMapping(value = "/client/{id}")
