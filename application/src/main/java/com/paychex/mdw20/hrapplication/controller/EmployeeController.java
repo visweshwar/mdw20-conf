@@ -19,9 +19,11 @@
 
 package com.paychex.mdw20.hrapplication.controller;
 
+import com.paychex.mdw20.hrapplication.entity.Employee;
 import com.paychex.mdw20.hrapplication.model.EmployeeModel;
 import com.paychex.mdw20.hrapplication.service.EmployeeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,24 +40,33 @@ public class EmployeeController {
 	@GetMapping(value = "/employee/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<EmployeeModel> getEmployee(@PathVariable(value = "id") String id) {
-		return new ResponseEntity<EmployeeModel>(employeeService.getEmployeeById(id), HttpStatus.OK);
+		ModelMapper modelMapper = new ModelMapper();
+		return new ResponseEntity<>(modelMapper.map(employeeService.getEmployeeById(id), EmployeeModel.class),
+				HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/employee", consumes = "application/json")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<EmployeeModel> createEmployee(@RequestBody EmployeeModel employee) {
-		return new ResponseEntity<EmployeeModel>(employeeService.createEmployee(employee), HttpStatus.CREATED);
+		ModelMapper modelMapper = new ModelMapper();
+		Employee svcRequest = modelMapper.map(employee, Employee.class);
+
+		return new ResponseEntity<>(modelMapper.map(employeeService.createEmployee(svcRequest), EmployeeModel.class),
+				HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/employee/{id}", consumes = "application/json")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<EmployeeModel> updateEmployee(@RequestBody EmployeeModel employee,
 			@PathVariable(value = "id") String id) {
-
-		if (employeeService.updateEmployee(employee, id)) {
-			return new ResponseEntity<EmployeeModel>(employeeService.getEmployeeById(id), HttpStatus.OK);
+		ModelMapper modelMapper = new ModelMapper();
+		Employee svcRequest = modelMapper.map(employee, Employee.class);
+		if (employeeService.updateEmployee(svcRequest, id)) {
+			return new ResponseEntity<>(modelMapper.map(employeeService.getEmployeeById(id), EmployeeModel.class),
+					HttpStatus.OK);
 		} else {
-			return new ResponseEntity<EmployeeModel>(employeeService.getEmployeeById(id), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(modelMapper.map(employeeService.getEmployeeById(id), EmployeeModel.class),
+					HttpStatus.BAD_REQUEST);
 		}
 	}
 

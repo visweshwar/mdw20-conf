@@ -19,10 +19,9 @@
 
 package com.paychex.mdw20.hrapplication.service.impl;
 
+import com.paychex.mdw20.hrapplication.entity.Client;
 import com.paychex.mdw20.hrapplication.entity.Employee;
 import com.paychex.mdw20.hrapplication.entity.repository.EmployeeRepository;
-import com.paychex.mdw20.hrapplication.model.ClientModel;
-import com.paychex.mdw20.hrapplication.model.EmployeeModel;
 import com.paychex.mdw20.hrapplication.service.ClientService;
 import com.paychex.mdw20.hrapplication.service.EmployeeService;
 import java.util.UUID;
@@ -46,24 +45,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private ClientService clientService;
 
 	@Override
-	public EmployeeModel getEmployeeById(String id) {
-		ModelMapper modelMapper = new ModelMapper();
-		return modelMapper.map(employeeRepository.findByEmployeeId(id), EmployeeModel.class);
+	public Employee getEmployeeById(String id) {
+		return employeeRepository.findByEmployeeId(id);
 	}
 
 	@Override
-	public EmployeeModel createEmployee(EmployeeModel employee) {
-		ModelMapper modelMapper = new ModelMapper();
-		ClientModel client = clientService.getClientById(employee.getClientId());
-		Employee employeeEntity = modelMapper.map(employee, Employee.class);
-		employeeEntity.setEmployeeId(UUID.randomUUID().toString());
-		employeeEntity.setPremium(client.isPremium());
-		employeeEntity.setCountry(client.getCountry());
-		return modelMapper.map(employeeRepository.insert(employeeEntity), EmployeeModel.class);
+	public Employee createEmployee(Employee employee) {
+		Client client = clientService.getClientById(employee.getClientId());
+		employee.setEmployeeId(UUID.randomUUID().toString());
+		employee.setPremium(client.isPremium());
+		employee.setCountry(client.getCountry());
+		return employeeRepository.insert(employee);
 	}
 
 	@Override
-	public boolean updateEmployee(EmployeeModel employee, String id) {
+	public boolean updateEmployee(Employee employee, String id) {
 
 		Employee employeeEntity = employeeRepository.findByEmployeeId(id);
 		Employee finalEmployee = null;

@@ -20,14 +20,15 @@
 package com.paychex.mdw20.hrapplication.service;
 
 import com.paychex.mdw20.hrapplication.entity.Client;
-import com.paychex.mdw20.hrapplication.model.ClientModel;
 
 public interface ClientService {
-	public ClientModel getClientById(String id);
+	Client getClientById(String id);
 
-	public ClientModel createClient(Client client);
+	Client createClient(Client client);
 
-	public boolean updateClient(Client client, String id);
+	boolean updateClient(Client client, String id);
 
-	public void deleteClient(String id);
+	void deleteClient(String id);
+
+	boolean migrateClient(String id, boolean status);
 }
