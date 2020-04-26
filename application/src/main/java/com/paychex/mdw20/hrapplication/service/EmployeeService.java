@@ -19,15 +19,14 @@
 
 package com.paychex.mdw20.hrapplication.service;
 
-import com.paychex.mdw20.hrapplication.entity.Employee;
-import java.util.UUID;
+import com.paychex.mdw20.hrapplication.model.EmployeeModel;
 
 public interface EmployeeService {
-	public Employee getEmployeeById(String id);
+	public EmployeeModel getEmployeeById(String id);
 
-	public Employee createEmployee(Employee client);
+	public EmployeeModel createEmployee(EmployeeModel client);
 
-	public Employee updateEmployee(Employee client, UUID id);
+	public boolean updateEmployee(EmployeeModel client, String id);
 
 	public void deleteEmployee(String id);
 }
