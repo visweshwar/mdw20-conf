@@ -20,9 +20,12 @@
 package com.paychex.mdw20.hrapplication.service.impl;
 
 import com.paychex.mdw20.hrapplication.entity.Client;
+import com.paychex.mdw20.hrapplication.entity.Employee;
 import com.paychex.mdw20.hrapplication.entity.repository.ClientRepository;
-import com.paychex.mdw20.hrapplication.model.ClientModel;
+import com.paychex.mdw20.hrapplication.entity.repository.EmployeeRepository;
 import com.paychex.mdw20.hrapplication.service.ClientService;
+import com.paychex.mdw20.hrapplication.service.EmployeeService;
+import java.util.List;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -42,19 +45,21 @@ public class ClientServiceImpl implements ClientService {
 	@Autowired
 	private ClientRepository clientRepository;
 
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
+	@Autowired
+	private EmployeeService employeeService;
+
 	@Override
-	public ClientModel getClientById(String id) {
-		Client clt = clientRepository.findByClientId(id);
-		ModelMapper modelMapper = new ModelMapper();
-		return modelMapper.map(clt, ClientModel.class);
+	public Client getClientById(String id) {
+		return clientRepository.findByClientId(id);
 	}
 
 	@Override
-	public ClientModel createClient(Client client) {
+	public Client createClient(Client client) {
 		client.setClientId(UUID.randomUUID().toString());
-		Client clt = clientRepository.insert(client);
-		ModelMapper modelMapper = new ModelMapper();
-		return modelMapper.map(clt, ClientModel.class);
+		return clientRepository.insert(client);
 
 	}
 
@@ -76,5 +81,31 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public void deleteClient(String id) {
 		clientRepository.deleteByClientId(id);
+	}
+
+	@Override
+	public boolean migrateClient(String clientId, boolean status) {
+
+		logger.info("Going to migrate %s to %s", clientId, status);
+
+		//1. Validate the client
+		Client client = clientRepository.findByClientId(clientId);
+		client.setPremium(status);
+
+		if (client == null) {
+			logger.error("Client not found");
+			return false;
+		}
+		//2. Fetch all employees on the client
+		List<Employee> employeeList = employeeRepository.getAllByClientId(clientId);
+
+		employeeList.forEach((employee) -> {
+			employee.setPremium(status);
+			employeeService.updateEmployee(employee, employee.getEmployeeId());
+		});
+
+		//3. Update Client
+		return this.updateClient(client, clientId);
+
 	}
 }

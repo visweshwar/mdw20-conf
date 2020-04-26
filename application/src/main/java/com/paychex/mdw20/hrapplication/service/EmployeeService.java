@@ -19,14 +19,14 @@
 
 package com.paychex.mdw20.hrapplication.service;
 
-import com.paychex.mdw20.hrapplication.model.EmployeeModel;
+import com.paychex.mdw20.hrapplication.entity.Employee;
 
 public interface EmployeeService {
-	public EmployeeModel getEmployeeById(String id);
+	Employee getEmployeeById(String id);
 
-	public EmployeeModel createEmployee(EmployeeModel client);
+	Employee createEmployee(Employee client);
 
-	public boolean updateEmployee(EmployeeModel client, String id);
+	boolean updateEmployee(Employee employee, String id);
 
-	public void deleteEmployee(String id);
+	void deleteEmployee(String id);
 }
