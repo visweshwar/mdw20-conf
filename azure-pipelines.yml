@@ -1,0 +1,86 @@
+# Deploy to Kubernetes - Review app with Azure DevSpaces
+# Build and push image to Azure Container Registry; Deploy to Azure Kuberentes Services and setup Review App with Azure DevSpaces
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'mdw20-docker-registry'
+  imageRepository: 'mdw20app'
+  containerRegistry: 'payxdemo.azurecr.io'
+  dockerfilePath: '**/Dockerfile'
+  tag: latest
+  imagePullSecret: 'payxdemo15920ab3-auth'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+  
+  # Azure Service connection
+  azureConnection: 'eb4b33a0-fe77-4192-b143-a5c93a039b67'
+  
+
+stages:
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'visweshwarMDW20-1263.mdw20'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: AzureCLI@2
+            displayName: get host suffix
+            inputs:
+              scriptType: pscore
+              scriptLocation: inlineScript
+              azureSubscription: $(azureConnection)
+              inlineScript: |
+                $clusterId="/subscriptions/7cdaab60-f457-444b-b525-1c77d9af47b9/resourcegroups/payx-demo/providers/Microsoft.ContainerService/managedClusters/payx-demo-eu"
+                $resourceGroupName=$(cut -d '/' -f5 <<< "$clusterId")
+                $clusterName=$(cut -d '/' -f9 <<< "$clusterId")
+                az aks use-dev-spaces -n $clusterName -g $resourceGroupName -s mdw20 -y
+                $hostSuffix=$(azds show-context -o json | ConvertFrom-Json).controller.hostSuffix
+                echo "##vso[task.setvariable variable=HostSuffix]$hostSuffix"
+
+          - task: KubernetesManifest@0
+            displayName: Bake manifests
+            name: bake
+            inputs:
+              action: bake
+              helmChart: $(Pipeline.Workspace)/charts/devspaces-v0.0.1.tgz
+              overrides: |
+                image.repository:$(containerRegistry)/$(imageRepository)
+                service.port:8080 
+                ingress.enabled:true
+                ingress.hostname:app.$(HostSuffix)
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(bake.manifestsBundle)
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
