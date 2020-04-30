@@ -11,7 +11,7 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'f31cfe96-1f05-4323-943d-88304f450c58'
+  dockerRegistryServiceConnection: 'mdw20-docker-registry'
   imageRepository: 'mdw20-app'
   containerRegistry: 'payxdemo.azurecr.io'
   dockerfilePath: '**/application/build/Dockerfile'
