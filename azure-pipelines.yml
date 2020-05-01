@@ -18,7 +18,7 @@ variables:
   tag: '$(Build.BuildId)'
   imagePullSecret: 'payxdemob9e4-auth'
 
-  # Agent VM image name
+  # Agent VM image name 
   vmImageName: 'ubuntu-latest'
   
 
@@ -52,8 +52,8 @@ stages:
 #           $(tag)
 #           latest
           
-#     - upload: manifests
-#       artifact: manifests
+    - upload: manifests
+      artifact: manifests
 
 - stage: Deploy
   displayName: Deploy stage
