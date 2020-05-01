@@ -11,6 +11,6 @@ spec:
     spec:
       containers:
         - name: mdw20-app
-          image: payxdemo.azurecr.io/mdw20-app:latest
+          image: payxdemo.azurecr.io/mdw20-app
           ports:
             - containerPort: 8080
