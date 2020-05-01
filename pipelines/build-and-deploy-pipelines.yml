@@ -88,7 +88,7 @@ stages:
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
-                $(containerRegistry)/$(imageRepository):latest   
+                $(containerRegistry)/$(imageRepository):$(tag)     
           - task: KubernetesManifest@0
             displayName: Deploy To US West
             inputs:
