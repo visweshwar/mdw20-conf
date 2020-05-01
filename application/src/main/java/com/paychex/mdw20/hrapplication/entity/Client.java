@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -41,7 +40,7 @@ public class Client implements Cloneable, CustomMongoEntity {
 	private boolean premium;
 	private String address;
 	private Countries country;
-	@MongoId
+	@Id
 	private ObjectId _id;
 	private boolean active;
 
