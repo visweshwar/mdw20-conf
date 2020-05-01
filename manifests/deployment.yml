@@ -7,7 +7,7 @@ spec:
   template:
     metadata:
       labels:
-        app: mdw20-app
+        app: mdw20-app:latest
     spec:
       containers:
         - name: mdw20-app
