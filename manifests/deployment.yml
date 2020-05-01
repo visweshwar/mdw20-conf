@@ -7,10 +7,10 @@ spec:
   template:
     metadata:
       labels:
-        app: mdw20-app:latest
+        app: mdw20-app
     spec:
       containers:
         - name: mdw20-app
-          image: payxdemo.azurecr.io/mdw20-app
+          image: payxdemo.azurecr.io/mdw20-app:latest
           ports:
             - containerPort: 8080
