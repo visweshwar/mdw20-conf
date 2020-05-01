@@ -23,23 +23,23 @@ variables:
   
 
 stages:
-# - stage: Build
-#   displayName: Build stage
-#   jobs:  
-#   - job: Build
-#     displayName: Build
-#     pool:
-#       vmImage: $(vmImageName)
-#     steps:
-#     - task: Gradle@2
-#       inputs:
-#         gradleWrapperFile: 'gradlew'
-#         workingDirectory: 'application'
-#         tasks: 'build'
-#         publishJUnitResults: true
-#         testResultsFiles: '**/TEST-*.xml'
-#         javaHomeOption: 'JDKVersion'
-#         sonarQubeRunAnalysis: false
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Gradle@2
+      inputs:
+        gradleWrapperFile: 'gradlew'
+        workingDirectory: 'application'
+        tasks: 'build'
+        publishJUnitResults: true
+        testResultsFiles: '**/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        sonarQubeRunAnalysis: false
 
 #     - task: Docker@2
 #       displayName: Build and push an image to container registry
@@ -57,7 +57,7 @@ stages:
 
 - stage: Deploy
   displayName: Deploy stage
-  #dependsOn: Build
+  dependsOn: Build
 
   jobs:
   - deployment: Deploy
