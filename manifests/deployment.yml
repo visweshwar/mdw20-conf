@@ -14,3 +14,14 @@ spec:
           image: payxdemo.azurecr.io/mdw20-app
           ports:
             - containerPort: 8080
+          env:
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: admin-username
+                  key: admin-username
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: admin-password
+                  key: admin-password
