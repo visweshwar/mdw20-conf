@@ -18,10 +18,10 @@ spec:
             - name: MONGO_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: admin-username
+                  name: mongo-shared-secrets
                   key: admin-username
             - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: admin-password
-                  key: admin-password
+                  name: mongo-secret-encoded
+                  key: mongo-password-encoded
