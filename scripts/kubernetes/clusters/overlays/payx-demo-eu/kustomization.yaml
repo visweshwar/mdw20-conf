@@ -1,0 +1,10 @@
+namespace: mdw20
+
+bases:
+- ../../../mongodb/shared/base
+
+- ../../../mongodb/mongod-statefulset/overlays/MDW20-config/payx-demo-eu
+- ../../../mongodb/mongod-instance/overlays/MDW20-config/payx-demo-eu/0
+
+- ../../../mongodb/mongod-statefulset/overlays/MDW20-eu/payx-demo-eu
+- ../../../mongodb/mongod-instance/overlays/MDW20-eu/payx-demo-eu/0
