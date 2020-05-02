@@ -1,0 +1,18 @@
+namePrefix: mdw20-us-archive-
+
+commonLabels: 
+  replica-set: MDW20-us-archive
+
+bases:
+- ../../../base
+
+patchesJSON6902:
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: mongod
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/command/3
+      value: MDW20-us-archive

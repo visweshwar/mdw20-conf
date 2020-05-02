@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongod
+spec:
+  selector:
+    matchLabels:
+      app: mongod
+  serviceName: mongod
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongod
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongod
+          image: payxdemo.azurecr.io/mongodb-enterprise:latest
+          # image: mongo:4.2
+          command:
+            - mongod
+            - --shardsvr
+            - --replSet
+            - REPLICA_SET_NAME
+            - --dbpath
+            - /data/db
+            - --port
+            - "27017"
+            - --bind_ip_all
+            - --auth
+            - --keyFile
+            - /config/keyfile
+          ports:
+            - containerPort: 27017
+              name: mongo
+          volumeMounts:
+            - name: mongod
+              mountPath: /data/db
+            - name: mongo-shared-secrets
+              mountPath: /config
+      volumes:
+        - name: mongo-shared-secrets
+          secret:
+            secretName: mongo-shared-secrets
+            defaultMode: 256
+            items:
+            - key: keyfile
+              path: keyfile
+  volumeClaimTemplates:
+    - metadata:
+        name: mongod
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: default
+        resources:
+          requests:
+            storage: 5Gi

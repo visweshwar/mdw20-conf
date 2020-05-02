@@ -1,0 +1,17 @@
+namespace: mdw20
+
+bases:
+- ../../../mongodb/shared/base
+
+- ../../../mongodb/mongod-statefulset/overlays/MDW20-config/payx-demo-us-east
+- ../../../mongodb/mongod-instance/overlays/MDW20-config/payx-demo-us-east/0
+
+- ../../../mongodb/mongod-statefulset/overlays/MDW20-us/payx-demo-us-east
+- ../../../mongodb/mongod-instance/overlays/MDW20-us/payx-demo-us-east/0
+
+- ../../../mongodb/mongod-statefulset/overlays/MDW20-us-premium/payx-demo-us-east
+- ../../../mongodb/mongod-instance/overlays/MDW20-us-premium/payx-demo-us-east/0
+- ../../../mongodb/mongod-instance/overlays/MDW20-us-premium/payx-demo-us-east/1
+
+- ../../../mongodb/mongod-statefulset/overlays/MDW20-us-archive/payx-demo-us-east
+- ../../../mongodb/mongod-instance/overlays/MDW20-us-archive/payx-demo-us-east/0
