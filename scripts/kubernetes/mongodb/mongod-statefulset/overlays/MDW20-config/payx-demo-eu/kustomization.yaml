@@ -1,0 +1,27 @@
+namePrefix: mdw20-config-
+
+commonLabels: 
+  replica-set: MDW20-config
+
+bases:
+- ../../../base
+
+patchesJSON6902:
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: mongod
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/command/3
+      value: MDW20-config
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: mongod
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/command/1
+      value: --configsvr

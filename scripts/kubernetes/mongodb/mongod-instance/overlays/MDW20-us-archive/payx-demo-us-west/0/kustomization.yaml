@@ -1,0 +1,19 @@
+namePrefix: mdw20-us-archive-
+nameSuffix: "-0"
+
+commonLabels: 
+  replica-set: MDW20-us-archive
+
+bases:
+- ../../../../base
+
+patchesJSON6902:
+- target:
+    version: v1
+    kind: Service
+    name: mongod
+  patch: |-
+    - op: replace
+      # ~1 is "/" in JSON Patch
+      path: /spec/selector/statefulset.kubernetes.io~1pod-name
+      value: mdw20-us-archive-mongod-0

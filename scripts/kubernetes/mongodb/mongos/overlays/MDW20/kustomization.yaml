@@ -1,0 +1,15 @@
+namePrefix: mdw20-
+
+commonLabels: 
+  cluster: MDW20
+
+bases:
+- ../../base
+
+configMapGenerator:
+- name: mongos-shared-config
+  files:
+    - config-replica-set-members=build/config-replica-set-members
+
+generatorOptions:
+ disableNameSuffixHash: true

@@ -4,43 +4,33 @@
 #*** SETUP ***#
 #*************#
 
-set -e # Exit on any error
-
 THIS_DIR=$(dirname "$0")
-. $THIS_DIR/config.sh
-
-run() {
-  set -x # Echo command
-  "${@}"
-  { set +x; } 2>/dev/null  # Turn off echo without writing to console
-}
+. "$THIS_DIR/functions/support_functions.sh"
 
 #********************************#
 #***  UPDATE KUBECTL CONTEXT  ***#
 #********************************#
 
-run az aks get-credentials \
-  --name=$AZ_AKS_NAME_US_EAST \
-  --subscription=$AZ_AKS_SUBSCRIPTION_US_EAST \
-  --resource-group=$AZ_RESOURCE_GROUP_NAME \
-  --overwrite-existing
+for AZ_AKS_NAME in payx-demo-us-east payx-demo-us-west payx-demo-eu; do
 
-run kubectl config set-context --current --namespace=$MONGO_K8S_NAMESPACE
+  promptForVariable \
+    AZ_AKS_SUBSCRIPTION                                               `# VARIABLE_NAME` \
+    "$THIS_DIR/build/aks/$AZ_AKS_NAME/subscription"                   `# SAVE_TO_FILE` \
+    "Enter the subscription for the kubernetes cluster $AZ_AKS_NAME"  `# PROMPT`
 
-run az aks get-credentials \
-  --name=$AZ_AKS_NAME_US_WEST \
-  --subscription=$AZ_AKS_SUBSCRIPTION_US_WEST \
-  --resource-group=$AZ_RESOURCE_GROUP_NAME \
-  --overwrite-existing
+  promptForVariable \
+    AZ_AKS_RESOURCE_GROUP_NAME                                          `# VARIABLE_NAME` \
+    "$THIS_DIR/build/aks/$AZ_AKS_NAME/resource_group"                   `# SAVE_TO_FILE` \
+    "Enter the resource group for the kubernetes cluster $AZ_AKS_NAME"  `# PROMPT`
 
-run kubectl config set-context --current --namespace=$MONGO_K8S_NAMESPACE
+  run az aks get-credentials \
+    --name=$AZ_AKS_NAME \
+    --subscription="$AZ_AKS_SUBSCRIPTION" \
+    --resource-group=$AZ_AKS_RESOURCE_GROUP_NAME \
+    --overwrite-existing
 
-run az aks get-credentials \
-  --name=$AZ_AKS_NAME_EU \
-  --subscription=$AZ_AKS_SUBSCRIPTION_EU \
-  --resource-group=$AZ_RESOURCE_GROUP_NAME \
-  --overwrite-existing
+  run kubectl config set-context --current --namespace=mdw20
 
-run kubectl config set-context --current --namespace=$MONGO_K8S_NAMESPACE
+done
 
-run kubectl config use-context $AZ_AKS_NAME_US_EAST
+run kubectl config use-context payx-demo-us-east

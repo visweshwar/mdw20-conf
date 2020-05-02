@@ -4,126 +4,71 @@
 #*** SETUP ***#
 #*************#
 
-set -e # Exit on any error
-
 THIS_DIR=$(dirname "$0")
-. $THIS_DIR/config.sh
-
-run() {
-  set -xe # Echo command
-  "${@}"
-  { set +x; } 2>/dev/null  # Turn off echo without writing to console
-}
-
-#********************************#
-#***  CREATE RESOURCE GROUPS  ***#
-#********************************#
-
-for SUBSCRIPTION in $( tr ' ' '\n' <<< "$AZ_SUBSCRIPTION $AZ_AKS_SUBSCRIPTION_US_EAST $AZ_AKS_SUBSCRIPTION_US_WEST $AZ_AKS_SUBSCRIPTION_EU" | sort | uniq); do
-  RG_ID=$( run az group list --query="[?name=='$AZ_RESOURCE_GROUP_NAME']|[0].id" --output=tsv --subscription=$SUBSCRIPTION )
-  if [[ -z "$RG_ID" ]]; then
-    RG_ID=$( run az group create \
-      --name=$AZ_RESOURCE_GROUP_NAME \
-      --location=$AZ_LOCATION \
-      --subscription=$SUBSCRIPTION \
-    )
-  else
-    echo "SKIPING: Resource Group '$RG_ID' already exists"
-  fi
-done
+. "$THIS_DIR/functions/support_functions.sh"
+. "$THIS_DIR/functions/az_functions.sh"
 
 #***********************************#
 #***  CREATE CONTAINER REGISTRY  ***#
 #***********************************#
 
-AZ_FLAGS="--subscription=$AZ_SUBSCRIPTION --resource-group=$AZ_RESOURCE_GROUP_NAME"
-ACR_ID=$( run az acr list --query="[?name=='$AZ_ACR_NAME']|[0].id" --output=tsv $AZ_FLAGS )
-if [[ -z "$ACR_ID" ]]; then
-  ACR_ID=$( run az acr create $AZ_FLAGS \
-      --name $AZ_ACR_NAME \
-      --sku basic \
-      --query=id \
-      --output=tsv \
-  )
-else
-  echo "SKIPING: Container Registry '$ACR_ID' already exists"
-fi
+promptForVariable \
+  AZ_ACR_SUBSCRIPTION                                  `# VARIABLE_NAME` \
+  "$THIS_DIR/build/acr/subscription"                   `# SAVE_TO_FILE` \
+  "Enter the subscription for the container registry"  `# PROMPT`
 
-#*************************#
-#***  CREATE DNS ZONE  ***#
-#*************************#
+promptForVariable \
+  AZ_ACR_RESOURCE_GROUP_NAME                             `# VARIABLE_NAME` \
+  "$THIS_DIR/build/acr/resource_group"                   `# SAVE_TO_FILE` \
+  "Enter the resource group for the container registry"  `# PROMPT`
 
-AZ_FLAGS="--subscription=$AZ_SUBSCRIPTION --resource-group=$AZ_RESOURCE_GROUP_NAME"
-DNS_ID=$( run az network dns zone list --query="[?name=='$DNS_ZONE']|[0].id" --output=tsv $AZ_FLAGS )
-if [[ -z "$DNS_ID" ]]; then
-  DNS_ID=$( run az network dns zone create \
-      --name $DNS_ZONE \
-      --query=id \
-      --output=tsv \
-      $AZ_FLAGS \
-  )
-else
-  echo "SKIPING: Key Vault '$DNS_ID' already exists"
-fi
+promptForVariable \
+  AZ_ACR_NAME                              `# VARIABLE_NAME` \
+  "$THIS_DIR/build/acr/name"               `# SAVE_TO_FILE` \
+  "Enter name for the container registry"  `# PROMPT`
+
+createContainerRegistry \
+  "$AZ_ACR_SUBSCRIPTION"       `# SUBSCRIPTION` \
+  $AZ_ACR_RESOURCE_GROUP_NAME  `# RESOURCE_GROUP_NAME` \
+  $AZ_ACR_NAME                 `# ACR_NAME`
 
 #*************************#
 #***  CREATE CLUSTERS  ***#
 #*************************#
 
-AZ_FLAGS="--subscription=$AZ_AKS_SUBSCRIPTION_US_EAST --resource-group=$AZ_RESOURCE_GROUP_NAME"
-AKS_ID=$( run az aks list --query="[?name=='$AZ_AKS_NAME_US_EAST']|[0].id" --output=tsv $AZ_FLAGS )
-if [[ -z "$AKS_ID" ]]; then
-  AKS_ID=$( run az aks create $AZ_FLAGS \
-      --name=$AZ_AKS_NAME_US_EAST \
-      --attach-acr=$ACR_ID \
-      --disable-rbac \
-      --load-balancer-sku=basic \
-      --location=$AZ_AKS_LOCATION_US_EAST \
-      --vm-set-type VirtualMachineScaleSets \
-      --node-count 2 \
-      --node-vm-size $AZ_AKS_COMPUTE_NODE_VM_SIZE \
-  )
-else
-  echo "SKIPING: AKS Cluster '$AKS_ID' already exists"
-fi
+for AZ_AKS_NAME in payx-demo-us-east payx-demo-us-west payx-demo-eu; do
+  promptForVariable \
+    AZ_AKS_SUBSCRIPTION                                               `# VARIABLE_NAME` \
+    "$THIS_DIR/build/aks/$AZ_AKS_NAME/subscription"                   `# SAVE_TO_FILE` \
+    "Enter the subscription for the kubernetes cluster $AZ_AKS_NAME"  `# PROMPT`
+  
+  promptForVariable \
+    AZ_AKS_RESOURCE_GROUP_NAME                                          `# VARIABLE_NAME` \
+    "$THIS_DIR/build/aks/$AZ_AKS_NAME/resource_group"                   `# SAVE_TO_FILE` \
+    "Enter the resource group for the kubernetes cluster $AZ_AKS_NAME"  `# PROMPT`
 
-AZ_FLAGS="--subscription=$AZ_AKS_SUBSCRIPTION_US_WEST --resource-group=$AZ_RESOURCE_GROUP_NAME"
-AKS_ID=$( run az aks list --query="[?name=='$AZ_AKS_NAME_US_WEST']|[0].id" --output=tsv $AZ_FLAGS )
-if [[ -z "$AKS_ID" ]]; then
-  AKS_ID=$( run az aks create $AZ_FLAGS \
-      --name=$AZ_AKS_NAME_US_WEST \
-      --attach-acr=$ACR_ID \
-      --disable-rbac \
-      --load-balancer-sku=basic \
-      --location=$AZ_AKS_LOCATION_US_WEST \
-      --vm-set-type VirtualMachineScaleSets \
-      --node-count 1 \
-      --node-vm-size $AZ_AKS_COMPUTE_NODE_VM_SIZE \
-  )
-else
-  echo "SKIPING: AKS Cluster '$AKS_ID' already exists"
-fi
+  promptForVariable \
+    AZ_AKS_LOCATION                                               `# VARIABLE_NAME` \
+    "$THIS_DIR/build/aks/$AZ_AKS_NAME/location"                   `# SAVE_TO_FILE` \
+    "Enter the location for the kubernetes cluster $AZ_AKS_NAME"  `# PROMPT`
 
-AZ_FLAGS="--subscription=$AZ_AKS_SUBSCRIPTION_EU --resource-group=$AZ_RESOURCE_GROUP_NAME"
-AKS_ID=$( run az aks list --query="[?name=='$AZ_AKS_NAME_EU']|[0].id" --output=tsv $AZ_FLAGS )
-if [[ -z "$AKS_ID" ]]; then
-  AKS_ID=$( run az aks create $AZ_FLAGS \
-      --name=$AZ_AKS_NAME_EU \
-      --attach-acr=$ACR_ID \
-      --disable-rbac \
-      --load-balancer-sku=basic \
-      --location=$AZ_AKS_LOCATION_EU \
-      --vm-set-type VirtualMachineScaleSets \
-      --node-count 1 \
-      --node-vm-size $AZ_AKS_COMPUTE_NODE_VM_SIZE \
-  )
-else
-  echo "SKIPING: AKS Cluster '$AKS_ID' already exists"
-fi
+  if [[ $CLUSTER == payx-demo-us-east ]]; then
+    AZ_AKS_NUMBER_OF_COMPUTE_NODES=2
+  else
+    AZ_AKS_NUMBER_OF_COMPUTE_NODES=1
+  fi
 
-#******************#
-#***  CLEAN UP  ***#
-#******************#
+  createCluster \
+    "$AZ_AKS_SUBSCRIPTION" \
+    $AZ_AKS_RESOURCE_GROUP_NAME \
+    $AZ_AKS_NAME \
+    $AZ_AKS_LOCATION \
+    $AZ_AKS_NUMBER_OF_COMPUTE_NODES 
+done
+
+#********************************#
+#***  UPDATE KUBECTL CONTEXT  ***#
+#********************************#
 
 # Update the kubectl config context
 "$THIS_DIR/update-kubectl-context.sh"

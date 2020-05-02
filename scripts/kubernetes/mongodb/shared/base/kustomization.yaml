@@ -1,0 +1,18 @@
+secretGenerator:
+- name: mongo-shared-secrets
+  files:
+    - keyfile=build/keyfile
+    - admin-username=build/admin-username
+    - admin-password=build/admin-password
+
+configMapGenerator:
+- name: mongo-shared-config
+  literals:
+    - config-replica-set-name=MDW20-config
+    - us-replica-set-name=MDW20-us
+    - us-premium-replica-set-name=MDW20-us-premium
+    - us-archive-replica-set-name=MDW20-us-archive
+    - eu-replica-set-name=MDW20-us-eu
+
+generatorOptions:
+ disableNameSuffixHash: true
