@@ -1,0 +1,235 @@
+version: '2'
+services:
+  us-standard:
+    container_name: us-standard
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet us-standard-rs --port 27017
+    ports:
+      - 28000:27017
+    expose:
+      - "28000"
+    environment:
+      TERM: xterm
+
+  us-premium-1:
+    container_name: us-premium-1
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet us-premium-rs --port 27017
+    ports:
+      - 28100:27017
+    expose:
+      - "28100"
+    environment:
+      TERM: xterm
+
+  us-premium-2:
+    container_name: us-premium-2
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet us-premium-rs --port 27017
+    ports:
+      - 28101:27017
+    expose:
+      - "28101"
+    environment:
+      TERM: xterm
+
+  us-premium-3:
+    container_name: us-premium-3
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet us-premium-rs --port 27017
+    ports:
+      - 28102:27017
+    expose:
+      - "28102"
+    environment:
+      TERM: xterm
+
+  us-archive-1:
+    container_name: us-archive-1
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet us-archive-rs --port 27017
+    ports:
+      - 28200:27017
+    expose:
+      - "28200"
+    environment:
+      TERM: xterm
+
+  us-archive-2:
+    container_name: us-archive-2
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet us-archive-rs --port 27017
+    ports:
+      - 28201:27017
+    expose:
+      - "28201"
+    environment:
+      TERM: xterm
+
+  us-archive-3:
+    container_name: us-archive-3
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet us-archive-rs --port 27017
+    ports:
+      - 28202:27017
+    expose:
+      - "28202"
+    environment:
+      TERM: xterm
+
+  eu-standard:
+    container_name: eu-standard
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet eu-standard-rs --port 27017
+    ports:
+      - 29000:27017
+    expose:
+      - "29000"
+    environment:
+      TERM: xterm
+
+  eu-premium-1:
+    container_name: eu-premium-1
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet eu-premium-rs --port 27017
+    ports:
+      - 29100:27017
+    expose:
+      - "29100"
+    environment:
+      TERM: xterm
+
+  eu-premium-2:
+    container_name: eu-premium-2
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet eu-premium-rs --port 27017
+    ports:
+      - 29101:27017
+    expose:
+      - "29101"
+    environment:
+      TERM: xterm
+
+  eu-premium-3:
+    container_name: eu-premium-3
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet eu-premium-rs --port 27017
+    ports:
+      - 29102:27017
+    expose:
+      - "29102"
+    environment:
+      TERM: xterm
+
+  eu-archive-1:
+    container_name: eu-archive-1
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet eu-archive-rs --port 27017
+    ports:
+      - 29200:27017
+    expose:
+      - "29200"
+    environment:
+      TERM: xterm
+
+  eu-archive-2:
+    container_name: eu-archive-2
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet eu-archive-rs --port 27017
+    ports:
+      - 29201:27017
+    expose:
+      - "29201"
+    environment:
+      TERM: xterm
+
+  eu-archive-3:
+    container_name: eu-archive-3
+    image: mongo4_2:1.0
+    command: mongod --shardsvr --replSet eu-archive-rs --port 27017
+    ports:
+      - 29202:27017
+    expose:
+      - "29202"
+    environment:
+      TERM: xterm
+
+  mongocfg1:
+    container_name: mongocfg1
+    image: mongo4_2:1.0
+    command: mongod --configsvr --replSet config-rs --port 27017
+    environment:
+      TERM: xterm
+    expose:
+      - "27017"
+
+  mongocfg2:
+    container_name: mongocfg2
+    image: mongo4_2:1.0
+    command: mongod --configsvr --replSet config-rs --port 27017
+    environment:
+      TERM: xterm
+    expose:
+      - "27017"
+
+  mongocfg3:
+    container_name: mongocfg3
+    image: mongo4_2:1.0
+    command: mongod --configsvr --replSet config-rs --port 27017
+    environment:
+      TERM: xterm
+    expose:
+      - "27017"
+
+  mongos1:
+    container_name: mongos1
+    image: mongo4_2:1.0
+    depends_on:
+      - us-standard
+      - us-premium-1
+      - us-premium-2
+      - us-premium-3
+      - us-archive-1
+      - us-archive-2
+      - us-archive-3
+      - eu-standard
+      - eu-premium-1
+      - eu-premium-2
+      - eu-premium-3
+      - eu-archive-1
+      - eu-archive-2
+      - eu-archive-3
+      - mongocfg1
+      - mongocfg2
+      - mongocfg3
+    command: mongos --bind_ip_all  --configdb config-rs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017
+    ports:
+      - 31000:27017
+    expose:
+      - "27017"
+  mongos2:
+    container_name: mongos2
+    image: mongo4_2:1.0
+    depends_on:
+      - us-standard
+      - us-premium-1
+      - us-premium-2
+      - us-premium-3
+      - us-archive-1
+      - us-archive-2
+      - us-archive-3
+      - eu-standard
+      - eu-premium-1
+      - eu-premium-2
+      - eu-premium-3
+      - eu-archive-1
+      - eu-archive-2
+      - eu-archive-3
+      - mongocfg1
+      - mongocfg2
+      - mongocfg3
+    command: mongos --bind_ip_all  --configdb config-rs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017
+    ports:
+      - 31001:27017
+    expose:
+      - "27017" 

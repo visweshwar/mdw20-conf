@@ -2,15 +2,16 @@
 # Build and push an image to Azure Container Registry
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-trigger:
-- master
+# trigger:
+# - master
 
 resources:
 - repo: self
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'b4de125d-d289-4110-a553-75443a0e9afd'
+  #dockerRegistryServiceConnection: 'b4de125d-d289-4110-a553-75443a0e9afd'
+  dockerRegistryServiceConnection: 'mdw20-docker-registry'
   imageRepository: 'mongodb-enterprise'
   containerRegistry: 'payxdemo.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/mongodb-enterprise/docker/Dockerfile'
@@ -37,3 +38,4 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+          latest
