@@ -19,27 +19,45 @@
 
 package com.paychex.mdw20.hrapplication.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
+import java.util.Map;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 /*
     Author: Visweshwar Ganesh 
    created on 3/8/20 
 */
-@Document(collection = "clients")
-public class Client {
+@Document(collection = Client.COLLECTION_NAME)
+public class Client implements Cloneable, CustomMongoEntity {
 
-	//TODO Add indexes
+	public static final String COLLECTION_NAME = "clientDetails";
 	private String clientId;
 	private String clientName;
 	private boolean premium;
 	private String address;
 	private Countries country;
+	@Id
+	private ObjectId _id;
+	private boolean active;
 
 	public Client(String clientName) {
 		this.clientName = clientName;
 	}
 
 	public Client() {
+	}
+
+	public Object get_id() {
+		return _id;
+	}
+
+	public void set_id(ObjectId _id) {
+		this._id = _id;
 	}
 
 	public String getAddress() {
@@ -80,5 +98,45 @@ public class Client {
 
 	public void setClientName(String clientName) {
 		this.clientName = clientName;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
+	@JsonIgnore
+	public Map<String, Object> getShardKey() {
+		return new HashMap<String, Object>() {{
+			put("premium", premium);
+			put("active", active);
+			put("clientId", clientId);
+			put("country", country.toString());
+		}};
+	}
+
+	@Override
+	@JsonIgnore
+	public Query getShardQuery() {
+		Query query = new Query(
+				Criteria.where("country").is(country.toString()).and("active").is(active).and("premium").is(
+						premium).and("clientId").is(clientId)
+
+		);
+		return query;
+	}
+
+	@Override
+	@JsonIgnore
+	public String getCollectionName() {
+		return COLLECTION_NAME;
 	}
 }

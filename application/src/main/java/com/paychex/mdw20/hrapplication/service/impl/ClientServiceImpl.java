@@ -20,9 +20,16 @@
 package com.paychex.mdw20.hrapplication.service.impl;
 
 import com.paychex.mdw20.hrapplication.entity.Client;
-import com.paychex.mdw20.hrapplication.entity.ClientRepository;
+import com.paychex.mdw20.hrapplication.entity.Employee;
+import com.paychex.mdw20.hrapplication.entity.repository.ClientRepository;
+import com.paychex.mdw20.hrapplication.entity.repository.EmployeeRepository;
 import com.paychex.mdw20.hrapplication.service.ClientService;
+import com.paychex.mdw20.hrapplication.service.EmployeeService;
+import java.util.List;
 import java.util.UUID;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +40,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class ClientServiceImpl implements ClientService {
 
+	Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
+
 	@Autowired
 	private ClientRepository clientRepository;
+
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
+	@Autowired
+	private EmployeeService employeeService;
 
 	@Override
 	public Client getClientById(String id) {
@@ -43,16 +58,54 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public Client createClient(Client client) {
+		client.setClientId(UUID.randomUUID().toString());
 		return clientRepository.insert(client);
+
 	}
 
 	@Override
-	public Client updateClient(Client client, UUID id) {
-		return clientRepository.save(client);
+	public boolean updateClient(Client client, String id) {
+		Client clientEntity = clientRepository.findByClientId(id);
+		Client finalClient = null;
+		try {
+			finalClient = (Client) clientEntity.clone();
+		} catch (CloneNotSupportedException e) {
+			logger.error(e.getMessage());
+		}
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.map(client, finalClient);
+
+		return clientRepository.doUpdate(clientEntity, finalClient);
 	}
 
 	@Override
 	public void deleteClient(String id) {
 		clientRepository.deleteByClientId(id);
+	}
+
+	@Override
+	public boolean migrateClient(String clientId, boolean status) {
+
+		logger.info("Going to migrate %s to %s", clientId, status);
+
+		//1. Validate the client
+		Client client = clientRepository.findByClientId(clientId);
+		client.setPremium(status);
+
+		if (client == null) {
+			logger.error("Client not found");
+			return false;
+		}
+		//2. Fetch all employees on the client
+		List<Employee> employeeList = employeeRepository.getAllByClientId(clientId);
+
+		employeeList.forEach((employee) -> {
+			employee.setPremium(status);
+			employeeService.updateEmployee(employee, employee.getEmployeeId());
+		});
+
+		//3. Update Client
+		return this.updateClient(client, clientId);
+
 	}
 }

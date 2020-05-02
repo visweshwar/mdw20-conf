@@ -19,20 +19,27 @@
 
 package com.paychex.mdw20.hrapplication.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
-import org.springframework.data.mongodb.core.index.Indexed;
+import java.util.HashMap;
+import java.util.Map;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+
+import static com.paychex.mdw20.hrapplication.entity.Employee.COLLECTION_NAME;
 
 /*
     Author: Visweshwar Ganesh 
    created on 3/8/20 
 */
-@Document(collection = "employees")
-public class Employee {
+@Document(collection = COLLECTION_NAME)
+public class Employee implements Cloneable, CustomMongoEntity {
 
-	@Indexed(unique = true, name = "ees_idx_ee_id")
+	public static final String COLLECTION_NAME = "employees";
 	private String employeeId;
-	@Indexed(unique = false, name = "ees_idx_ee_active")
 	private boolean active;
 	private String firstName;
 	private String lastName;
@@ -43,6 +50,17 @@ public class Employee {
 	private Double salary;
 	private Countries country;
 	private Date dob;
+	@Id
+	private ObjectId _id;
+	private boolean premium;
+
+	public boolean isPremium() {
+		return premium;
+	}
+
+	public void setPremium(boolean premium) {
+		this.premium = premium;
+	}
 
 	public Employee() {
 	}
@@ -119,6 +137,14 @@ public class Employee {
 		this.phone = phone;
 	}
 
+	public Countries getCountry() {
+		return country;
+	}
+
+	public void setCountry(Countries country) {
+		this.country = country;
+	}
+
 	public String getClientId() {
 		return clientId;
 	}
@@ -127,12 +153,44 @@ public class Employee {
 		this.clientId = clientId;
 	}
 
-	public Countries getCountry() {
-		return country;
+	public ObjectId get_id() {
+		return _id;
 	}
 
-	public void setCountry(Countries country) {
-		this.country = country;
+	public void set_id(ObjectId _id) {
+		this._id = _id;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
+	@JsonIgnore
+	public Map<String, Object> getShardKey() {
+		return new HashMap<String, Object>() {{
+			put("premium", premium);
+			put("active", active);
+			put("employeeId", clientId);
+			put("country", country.toString());
+		}};
+	}
+
+	@Override
+	@JsonIgnore
+	public Query getShardQuery() {
+		Query query = new Query(
+				Criteria.where("country").is(country.toString()).and("active").is(active).and("premium").is(
+						premium).and("employeeId").is(employeeId)
+
+		);
+		return query;
+	}
+
+	@Override
+	@JsonIgnore
+	public String getCollectionName() {
+		return COLLECTION_NAME;
 	}
 }
 

@@ -17,8 +17,10 @@
  *
  */
 
-package com.paychex.mdw20.hrapplication.entity;
+package com.paychex.mdw20.hrapplication.entity.repository;
 
+import com.paychex.mdw20.hrapplication.entity.Employee;
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -26,9 +28,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
     Author: Visweshwar Ganesh 
    created on 3/8/20 
 */
-@RepositoryRestResource(collectionResourceRel = "client", path = "client")
-public interface ClientRepository extends MongoRepository<Client, String> {
-	Client findByClientId(String id);
+@RepositoryRestResource(collectionResourceRel = "employee", path = "employee")
+public interface EmployeeRepository extends MongoRepository<Employee, String>, CustomUpdateRepository {
+	Employee findByEmployeeId(String id);
 
-	void deleteByClientId(String id);
+	List<Employee> getAllByClientId(String id);
+
+	void deleteByEmployeeId(String id);
 }
+

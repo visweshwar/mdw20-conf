@@ -19,10 +19,15 @@
 
 package com.paychex.mdw20.hrapplication.service.impl;
 
+import com.paychex.mdw20.hrapplication.entity.Client;
 import com.paychex.mdw20.hrapplication.entity.Employee;
-import com.paychex.mdw20.hrapplication.entity.EmployeeRepository;
+import com.paychex.mdw20.hrapplication.entity.repository.EmployeeRepository;
+import com.paychex.mdw20.hrapplication.service.ClientService;
 import com.paychex.mdw20.hrapplication.service.EmployeeService;
 import java.util.UUID;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +40,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
+	Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+	@Autowired
+	private ClientService clientService;
 
 	@Override
 	public Employee getEmployeeById(String id) {
@@ -42,13 +50,29 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee createEmployee(Employee client) {
-		return employeeRepository.insert(client);
+	public Employee createEmployee(Employee employee) {
+		Client client = clientService.getClientById(employee.getClientId());
+		employee.setEmployeeId(UUID.randomUUID().toString());
+		employee.setPremium(client.isPremium());
+		employee.setCountry(client.getCountry());
+		return employeeRepository.insert(employee);
 	}
 
 	@Override
-	public Employee updateEmployee(Employee client, UUID id) {
-		return employeeRepository.save(client);
+	public boolean updateEmployee(Employee employee, String id) {
+
+		Employee employeeEntity = employeeRepository.findByEmployeeId(id);
+		Employee finalEmployee = null;
+		try {
+			finalEmployee = (Employee) employeeEntity.clone();
+		} catch (CloneNotSupportedException e) {
+			logger.error(e.getMessage());
+		}
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.map(employee, finalEmployee);
+
+		return employeeRepository.doUpdate(employeeEntity, finalEmployee);
+
 	}
 
 	@Override
