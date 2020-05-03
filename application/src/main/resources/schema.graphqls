@@ -1,0 +1,28 @@
+scalar Date
+
+type Query {
+    clientById(id: String!): Client
+    employeeById(id: String!): Employee
+}
+
+type Client {
+    clientId: String!
+    clientName: String!
+    premium: Boolean!
+    address: String!
+    country: String!
+    active: Boolean!
+}
+
+type Employee {
+    employeeId: String!
+    active: Boolean!
+    firstName: String!
+    lastName: String!
+    ssn: Int
+    bloodType: String
+    phone: String
+    salary: Float
+    dob: Date
+    client: Client
+}
