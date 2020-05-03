@@ -44,6 +44,7 @@ task copyDocker(dependsOn: build, type: Copy) {
         include "script.sh"
     }
 }
+
 dependencies {
     //implementation project(':DemoHRApplication')
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
@@ -55,6 +56,10 @@ dependencies {
             ]
     )
 
+    implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:7.0.1'
+    implementation 'com.graphql-java-kickstart:graphiql-spring-boot-starter:7.0.1'
+    implementation 'com.zhokhov.graphql:graphql-datetime-spring-boot-starter:1.9.0'
+
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
 //    compile group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0-SNAPSHOT'
 //    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0-SNAPSHOT'
@@ -62,6 +67,8 @@ dependencies {
     compile group: 'org.springdoc', name: 'springdoc-openapi-core', version: '1.1.44'
     compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.1.44'
     compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.0'
+
+    compile 'com.graphql-java-kickstart:graphql-java-tools:6.0.2'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
