@@ -91,9 +91,9 @@ public class ClientController {
 				HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/client/")
+	@PostMapping(value = "/find/clientIds")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<ClientModel> getClientByIds(@PathVariable(value = "clientIds") List<String> clientIds) {
+	public ResponseEntity<ClientModel> getClientByIds(@RequestBody List<String> clientIds) {
 		ModelMapper modelMapper = new ModelMapper();
 		return new ResponseEntity<>(modelMapper.map(clientService.getClientsById(clientIds), ClientModel.class),
 				HttpStatus.OK);
