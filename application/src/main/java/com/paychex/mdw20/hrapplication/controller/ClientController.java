@@ -24,6 +24,7 @@ import com.paychex.mdw20.hrapplication.model.ClientModel;
 import com.paychex.mdw20.hrapplication.service.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,11 +92,12 @@ public class ClientController {
 				HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/find/clientIds")
+	@PostMapping(value = "/find/clientIds", consumes = "application/json")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<ClientModel> getClientByIds(@RequestBody List<String> clientIds) {
+	public ResponseEntity getClientByIds(@RequestBody List<String> clientIds) {
 		ModelMapper modelMapper = new ModelMapper();
-		return new ResponseEntity<>(modelMapper.map(clientService.getClientsById(clientIds), ClientModel.class),
-				HttpStatus.OK);
+		List<Client> client = clientService.getClientsById(clientIds).stream().map(
+				ee -> modelMapper.map(ee, Client.class)).collect(Collectors.toList());
+		return new ResponseEntity(client, HttpStatus.OK);
 	}
 }
