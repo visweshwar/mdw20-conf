@@ -96,6 +96,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 			ee.setEmployeeId(UUID.randomUUID().toString());
 			ee.setPremium(clientMap.get(ee.getClientId()).isPremium());
 			ee.setCountry(clientMap.get(ee.getClientId()).getCountry());
+			System.out.println(ee.get_id() + " " + ee.getCountry() + ee.getClientId() + " " + clientMap.get(
+					ee.getClientId()).toString());
 			return ee;
 		});
 
