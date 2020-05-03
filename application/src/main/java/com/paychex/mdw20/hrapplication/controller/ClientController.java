@@ -96,8 +96,8 @@ public class ClientController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity getClientByIds(@RequestBody List<String> clientIds) {
 		ModelMapper modelMapper = new ModelMapper();
-		List<Client> client = clientService.getClientsById(clientIds).stream().map(
-				ee -> modelMapper.map(ee, Client.class)).collect(Collectors.toList());
+		List<ClientModel> client = clientService.getClientsById(clientIds).stream().map(
+				ee -> modelMapper.map(ee, ClientModel.class)).collect(Collectors.toList());
 		return new ResponseEntity(client, HttpStatus.OK);
 	}
 }
