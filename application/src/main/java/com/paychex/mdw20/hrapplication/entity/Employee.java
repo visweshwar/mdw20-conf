@@ -43,7 +43,7 @@ public class Employee implements Cloneable, CustomMongoEntity {
 	private boolean active;
 	private String firstName;
 	private String lastName;
-	private int ssn;
+	private String ssn;
 	private String bloodType;
 	private String phone;
 	private String clientId;
@@ -113,11 +113,11 @@ public class Employee implements Cloneable, CustomMongoEntity {
 		this.lastName = lastName;
 	}
 
-	public int getSsn() {
+	public String getSsn() {
 		return ssn;
 	}
 
-	public void setSsn(int ssn) {
+	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
 

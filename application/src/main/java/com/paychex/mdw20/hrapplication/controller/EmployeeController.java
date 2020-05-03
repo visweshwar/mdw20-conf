@@ -23,6 +23,8 @@ import com.paychex.mdw20.hrapplication.entity.Employee;
 import com.paychex.mdw20.hrapplication.model.EmployeeModel;
 import com.paychex.mdw20.hrapplication.service.EmployeeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,8 +77,20 @@ public class EmployeeController {
 	public void deleteEmployee(@PathVariable(value = "id") String id) {
 		employeeService.deleteEmployee(id);
 	}
+
+	@PostMapping(value = "/employees", consumes = "application/json")
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity createEmployee(@RequestBody List<EmployeeModel> employee) {
+		ModelMapper modelMapper = new ModelMapper();
+		List<Employee> svcRequest = employee.stream().map(ee -> modelMapper.map(ee, Employee.class)).collect(
+				Collectors.toList());
+
+		List<Employee> svcResponse = employeeService.loadEmployees(svcRequest);
+
+		List<EmployeeModel> response = svcResponse.stream().map(
+				eem -> modelMapper.map(eem, EmployeeModel.class)).collect(Collectors.toList());
+
+		return new ResponseEntity(response, HttpStatus.CREATED);
+	}
+
 }
-/*
-    Author: Visweshwar Ganesh 
-   created on 3/8/20 
-*/

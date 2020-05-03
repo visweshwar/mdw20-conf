@@ -20,6 +20,7 @@
 package com.paychex.mdw20.hrapplication.service;
 
 import com.paychex.mdw20.hrapplication.entity.Client;
+import java.util.List;
 
 public interface ClientService {
 	Client getClientById(String id);
@@ -31,4 +32,6 @@ public interface ClientService {
 	void deleteClient(String id);
 
 	boolean migrateClient(String id, boolean status);
+
+	List<Client> getClientsById(List<String> id);
 }

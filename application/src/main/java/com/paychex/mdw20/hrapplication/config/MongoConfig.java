@@ -91,7 +91,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
 	private Map<String, BsonDocument> getJsonSchemaMap() {
 
-		return Stream.of(new AbstractMap.SimpleEntry<>("test.employees",
+		return Stream.of(new AbstractMap.SimpleEntry<>("client.employees",
 
 				BsonDocument.parse(
 						EmployeeEncryptionSchema.getDocument(kmsHandler.getEncryptionKeyBase64()).toJson()))).collect(

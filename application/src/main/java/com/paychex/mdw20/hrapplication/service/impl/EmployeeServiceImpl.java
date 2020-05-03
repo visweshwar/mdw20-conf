@@ -24,7 +24,11 @@ import com.paychex.mdw20.hrapplication.entity.Employee;
 import com.paychex.mdw20.hrapplication.entity.repository.EmployeeRepository;
 import com.paychex.mdw20.hrapplication.service.ClientService;
 import com.paychex.mdw20.hrapplication.service.EmployeeService;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,5 +82,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public void deleteEmployee(String id) {
 		employeeRepository.deleteByEmployeeId(id);
+	}
+
+	@Override
+	public List<Employee> loadEmployees(List<Employee> employees) {
+
+		List<String> clientIds = employees.stream().map(ee -> ee.getClientId()).collect(Collectors.toList());
+
+		List<Client> clients = clientService.getClientsById(clientIds);
+		Map<String, Client> clientMap = clients.stream().collect(
+				Collectors.toMap(Client::getClientId, Function.identity()));
+		employees.stream().map(ee -> {
+			ee.setEmployeeId(UUID.randomUUID().toString());
+			ee.setPremium(clientMap.get(ee.getClientId()).isPremium());
+			ee.setCountry(clientMap.get(ee.getClientId()).getCountry());
+			return ee;
+		});
+
+		return employeeRepository.saveAll(employees);
 	}
 }

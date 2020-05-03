@@ -108,4 +108,9 @@ public class ClientServiceImpl implements ClientService {
 		return this.updateClient(client, clientId);
 
 	}
+
+	@Override
+	public List<Client> getClientsById(List<String> clientIds) {
+		return clientRepository.findAllByClientIdIn(clientIds);
+	}
 }

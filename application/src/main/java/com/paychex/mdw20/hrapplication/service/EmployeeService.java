@@ -20,6 +20,7 @@
 package com.paychex.mdw20.hrapplication.service;
 
 import com.paychex.mdw20.hrapplication.entity.Employee;
+import java.util.List;
 
 public interface EmployeeService {
 	Employee getEmployeeById(String id);
@@ -29,4 +30,6 @@ public interface EmployeeService {
 	boolean updateEmployee(Employee employee, String id);
 
 	void deleteEmployee(String id);
+
+	List<Employee> loadEmployees(List<Employee> id);
 }
