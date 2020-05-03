@@ -1,6 +1,6 @@
 FROM xqdocker/ubuntu-openjdk:8
 ENV MASTER_KEY YGNalmAN2M6hOySJuwq1fckWpfb2IZ/6RdtvtubB7qFAq1N+O836D5QD00RCxdin25OEXaCNSviZn6Zu5xEoOep1n1G0wi+lLUZMXqchBjZ7GDQQyb4JuOLsDwXxnoJV
-ENV JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n -Xms256m -Xmx512m -XX:MaxMetaspaceSize=128m"
+ENV JAVA_OPTS "-agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n -Xms256m -Xmx512m -XX:MaxMetaspaceSize=128m"
 
 #Install base Ubuntu libraries
 RUN apt-get update && apt-get install -y curl wget apt-transport-https ca-certificates apt-utils gnupg
