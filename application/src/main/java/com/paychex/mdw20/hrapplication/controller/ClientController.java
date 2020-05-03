@@ -23,6 +23,7 @@ import com.paychex.mdw20.hrapplication.entity.Client;
 import com.paychex.mdw20.hrapplication.model.ClientModel;
 import com.paychex.mdw20.hrapplication.service.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -87,6 +88,14 @@ public class ClientController {
 	public ResponseEntity<ClientModel> getClientByName(@PathVariable(value = "name") String name) {
 		ModelMapper modelMapper = new ModelMapper();
 		return new ResponseEntity<>(modelMapper.map(clientService.getClientByName(name), ClientModel.class),
+				HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/client/")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<ClientModel> getClientByIds(@PathVariable(value = "clientIds") List<String> clientIds) {
+		ModelMapper modelMapper = new ModelMapper();
+		return new ResponseEntity<>(modelMapper.map(clientService.getClientsById(clientIds), ClientModel.class),
 				HttpStatus.OK);
 	}
 }

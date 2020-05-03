@@ -44,7 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
-	Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 	@Autowired
 	private ClientService clientService;
 
@@ -96,8 +96,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			ee.setEmployeeId(UUID.randomUUID().toString());
 			ee.setPremium(clientMap.get(ee.getClientId()).isPremium());
 			ee.setCountry(clientMap.get(ee.getClientId()).getCountry());
-			logger.info(ee.get_id() + " " + ee.getCountry() + ee.getClientId() + " " + clientMap.get(
-					ee.getClientId()).toString());
+
 			return ee;
 		});
 
