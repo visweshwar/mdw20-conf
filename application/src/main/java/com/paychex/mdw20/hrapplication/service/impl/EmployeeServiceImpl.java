@@ -92,6 +92,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		List<Client> clients = clientService.getClientsById(clientIds);
 		Map<String, Client> clientMap = clients.stream().collect(
 				Collectors.toMap(Client::getClientId, Function.identity()));
+
 		employees.stream().map(ee -> {
 			ee.setEmployeeId(UUID.randomUUID().toString());
 			ee.setPremium(clientMap.get(ee.getClientId()).isPremium());
