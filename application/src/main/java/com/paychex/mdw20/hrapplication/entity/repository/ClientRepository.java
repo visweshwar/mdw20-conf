@@ -36,4 +36,6 @@ public interface ClientRepository extends MongoRepository<Client, String>, Custo
 
 	List<Client> findAllByClientIdIn(List<String> id);
 
+	Client findByClientName(String name);
+
 }

@@ -34,4 +34,6 @@ public interface ClientService {
 	boolean migrateClient(String id, boolean status);
 
 	List<Client> getClientsById(List<String> id);
+
+	Client getClientByName(String name);
 }

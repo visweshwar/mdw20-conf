@@ -113,4 +113,10 @@ public class ClientServiceImpl implements ClientService {
 	public List<Client> getClientsById(List<String> clientIds) {
 		return clientRepository.findAllByClientIdIn(clientIds);
 	}
+
+	@Override
+	public Client getClientByName(String name) {
+		return clientRepository.findByClientName(name);
+	}
+
 }
