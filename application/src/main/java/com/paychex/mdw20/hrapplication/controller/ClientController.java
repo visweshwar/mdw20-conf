@@ -84,7 +84,7 @@ public class ClientController {
 		return clientService.migrateClient(id, premiumStatus);
 	}
 
-	@GetMapping(value = "/client/{name}")
+	@GetMapping(value = "/client/name/{name}")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<ClientModel> getClientByName(@PathVariable(value = "name") String name) {
 		ModelMapper modelMapper = new ModelMapper();
