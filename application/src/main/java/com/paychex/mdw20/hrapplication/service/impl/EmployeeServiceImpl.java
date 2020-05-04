@@ -93,12 +93,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Map<String, Client> clientMap = clients.stream().collect(
 				Collectors.toMap(Client::getClientId, Function.identity()));
 
-		employees.stream().map(ee -> {
+		employees.forEach(ee -> {
 			ee.setEmployeeId(UUID.randomUUID().toString());
 			ee.setPremium(clientMap.get(ee.getClientId()).isPremium());
 			ee.setCountry(clientMap.get(ee.getClientId()).getCountry());
 
-			return ee;
 		});
 
 		return employeeRepository.saveAll(employees);
