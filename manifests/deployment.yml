@@ -25,3 +25,8 @@ spec:
                 secretKeyRef:
                   name: mongo-secret-encoded
                   key: mongo-password-encoded
+            - name: REGION
+                valueFrom:
+                  configMapKeyRef:
+                    name: region-map
+                    key: region

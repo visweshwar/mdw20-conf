@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,8 @@ public class ClientController {
 
 	@Autowired
 	private ClientService clientService;
+	@Value(value = "${application.region}")
+	private String REGION;
 
 	@GetMapping(value = "/client/{id}")
 	@ResponseStatus(HttpStatus.OK)
@@ -52,17 +55,22 @@ public class ClientController {
 
 	@PostMapping(value = "/client", consumes = "application/json")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<ClientModel> createClient(@RequestBody Client client) {
+	public ResponseEntity<ClientModel> createClient(@RequestBody ClientModel client) {
 		ModelMapper modelMapper = new ModelMapper();
-		return new ResponseEntity<>(modelMapper.map(clientService.createClient(client), ClientModel.class),
+		Client svcRequest = modelMapper.typeMap(ClientModel.class, Client.class).addMapping(mapper -> REGION,
+				Client::setRegion).map(client);
+		return new ResponseEntity<>(modelMapper.map(clientService.createClient(svcRequest), ClientModel.class),
 				HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/client/{id}", consumes = "application/json")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<ClientModel> updateClient(@RequestBody Client client, @PathVariable(value = "id") String id) {
+	public ResponseEntity<ClientModel> updateClient(@RequestBody ClientModel client,
+			@PathVariable(value = "id") String id) {
 		ModelMapper modelMapper = new ModelMapper();
-		if (clientService.updateClient(client, id)) {
+		Client svcRequest = modelMapper.typeMap(ClientModel.class, Client.class).addMapping(mapper -> REGION,
+				Client::setRegion).map(client);
+		if (clientService.updateClient(svcRequest, id)) {
 			return new ResponseEntity<>(modelMapper.map(clientService.getClientById(id), ClientModel.class),
 					HttpStatus.OK);
 		} else {

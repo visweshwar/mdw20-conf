@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,8 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeService;
+	@Value(value = "${application.region}")
+	private String REGION;
 
 	@GetMapping(value = "/employee/{id}")
 	@ResponseStatus(HttpStatus.OK)
@@ -51,7 +54,8 @@ public class EmployeeController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<EmployeeModel> createEmployee(@RequestBody EmployeeModel employee) {
 		ModelMapper modelMapper = new ModelMapper();
-		Employee svcRequest = modelMapper.map(employee, Employee.class);
+		Employee svcRequest = modelMapper.typeMap(EmployeeModel.class, Employee.class).addMapping(mapper -> REGION,
+				Employee::setRegion).map(employee);
 
 		return new ResponseEntity<>(modelMapper.map(employeeService.createEmployee(svcRequest), EmployeeModel.class),
 				HttpStatus.CREATED);
@@ -62,7 +66,8 @@ public class EmployeeController {
 	public ResponseEntity<EmployeeModel> updateEmployee(@RequestBody EmployeeModel employee,
 			@PathVariable(value = "id") String id) {
 		ModelMapper modelMapper = new ModelMapper();
-		Employee svcRequest = modelMapper.map(employee, Employee.class);
+		Employee svcRequest = modelMapper.typeMap(EmployeeModel.class, Employee.class).addMapping(mapper -> REGION,
+				Employee::setRegion).map(employee);
 		if (employeeService.updateEmployee(svcRequest, id)) {
 			return new ResponseEntity<>(modelMapper.map(employeeService.getEmployeeById(id), EmployeeModel.class),
 					HttpStatus.OK);
@@ -82,8 +87,9 @@ public class EmployeeController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity createEmployee(@RequestBody List<EmployeeModel> employee) {
 		ModelMapper modelMapper = new ModelMapper();
-		List<Employee> svcRequest = employee.stream().map(ee -> modelMapper.map(ee, Employee.class)).collect(
-				Collectors.toList());
+		List<Employee> svcRequest = employee.stream().map(
+				ee -> modelMapper.typeMap(EmployeeModel.class, Employee.class).addMapping(mapper -> REGION,
+						Employee::setRegion).map(ee)).collect(Collectors.toList());
 
 		List<Employee> svcResponse = employeeService.loadEmployees(svcRequest);
 

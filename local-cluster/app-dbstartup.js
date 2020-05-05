@@ -8,6 +8,7 @@ sh.addShardTag("MDW20-eu", "EU-S");
 sh.addShardTag("MDW20-eu", "EU-P");
 sh.addShardTag("MDW20-eu", "EU-A");
 
+
 sh.enableSharding("client");
 db.clientDetails.ensureIndex({country: 1, active: 1, premium: 1, clientId: 1}, {name: "pre_ctry_cid_idx"});
 //shard the client collection on premium or not

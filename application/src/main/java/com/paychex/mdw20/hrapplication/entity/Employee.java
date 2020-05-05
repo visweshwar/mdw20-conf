@@ -53,6 +53,7 @@ public class Employee implements Cloneable, CustomMongoEntity {
 	@Id
 	private ObjectId _id;
 	private boolean premium;
+	private String region;
 
 	public boolean isPremium() {
 		return premium;
@@ -165,6 +166,14 @@ public class Employee implements Cloneable, CustomMongoEntity {
 		return super.clone();
 	}
 
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
 	@Override
 	@JsonIgnore
 	public Map<String, Object> getShardKey() {
@@ -172,7 +181,7 @@ public class Employee implements Cloneable, CustomMongoEntity {
 			put("premium", premium);
 			put("active", active);
 			put("employeeId", clientId);
-			put("country", country.toString());
+			put("region", region);
 		}};
 	}
 
@@ -180,8 +189,8 @@ public class Employee implements Cloneable, CustomMongoEntity {
 	@JsonIgnore
 	public Query getShardQuery() {
 		Query query = new Query(
-				Criteria.where("country").is(country.toString()).and("active").is(active).and("premium").is(
-						premium).and("employeeId").is(employeeId)
+				Criteria.where("region").is(region).and("active").is(active).and("premium").is(premium).and(
+						"employeeId").is(employeeId)
 
 		);
 		return query;
