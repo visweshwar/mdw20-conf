@@ -16,7 +16,6 @@ var eeArr = (JSON.parse(ee1)
     .concat(JSON.parse(ee2)));
 
 eeArr.forEach(function (ee, position) {
-
     ee.clientId = clients[position % 4].clientId;
     ee.premium = clients[position % 4].premium;
     ee.country = clients[position % 4].country;
