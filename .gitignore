@@ -4,9 +4,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-
+.settings
+.history
 ### IntelliJ IDEA ###
 .idea
+.project
 *.iws
 *.iml
 *.ipr
