@@ -1,28 +1,54 @@
 scalar Date
 
+schema {
+    query: Query
+    subscription: Subscription
+}
+
 type Query {
-    clientById(id: String!): Client
-    employeeById(id: String!): Employee
+    clientById(id: ID!): Client
+    employeeById(id: ID!): Employee
 }
 
 type Client {
-    clientId: String!
-    clientName: String!
+    clientId: ID!
+    clientName: String
     premium: Boolean!
-    address: String!
-    country: String!
+    address: String
+    country: String
     active: Boolean!
+    employees: [Employee]!
+    region: String!
+    replicaSetName: String!
 }
 
 type Employee {
-    employeeId: String!
+    employeeId: ID!
     active: Boolean!
-    firstName: String!
-    lastName: String!
-    ssn: Int
+    firstName: String
+    lastName: String
+    ssn: String
     bloodType: String
     phone: String
     salary: Float
     dob: Date
-    client: Client
+    client: Client!
+    region: String!
+    replicaSetName: String!
+}
+
+type Subscription {
+    clientChanges: ClientChangeEvent!
+#    employeeChanges: EmployeeChangeEvent!
+}
+
+#type EmployeeChangeEvent {
+#    operationType: String
+#    employee: Employee
+#}
+
+type ClientChangeEvent {
+    operationType: String
+    documentKey: Client
+    fullDocument: Client
 }

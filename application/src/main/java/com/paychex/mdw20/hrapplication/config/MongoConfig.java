@@ -44,6 +44,7 @@ import org.springframework.data.convert.CustomConversions;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
@@ -54,6 +55,7 @@ import static java.lang.System.getProperty;
 */
 @Configuration
 @EnableMongoRepositories(basePackages = "com.paychex.mdw20.hrapplication.entity")
+@EnableReactiveMongoRepositories(basePackages = "com.paychex.mdw20.hrapplication.entity")
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
 	@Value(value = "${spring.data.mongodb.uri}")
