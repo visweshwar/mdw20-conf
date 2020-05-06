@@ -46,8 +46,11 @@ public class EmployeeController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<EmployeeModel> getEmployee(@PathVariable(value = "id") String id) {
 		ModelMapper modelMapper = new ModelMapper();
-		return new ResponseEntity<>(modelMapper.map(employeeService.getEmployeeById(id), EmployeeModel.class),
-				HttpStatus.OK);
+		Employee response = employeeService.getEmployeeById(id);
+		if (response == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(modelMapper.map(response, EmployeeModel.class), HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/employee", consumes = "application/json")

@@ -30,9 +30,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 */
 @RepositoryRestResource(collectionResourceRel = "employee", path = "employee")
 public interface EmployeeRepository extends MongoRepository<Employee, String>, CustomUpdateRepository {
-	Employee findByEmployeeId(String id);
+	Employee findByEmployeeIdAndRegion(String id, String region);
 
-	List<Employee> getAllByClientId(String id);
+	List<Employee> getAllByClientIdAndRegion(String id, String region);
 
 	void deleteByEmployeeId(String id);
 

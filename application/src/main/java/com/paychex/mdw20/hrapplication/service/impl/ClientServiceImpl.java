@@ -31,6 +31,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /*
@@ -51,9 +52,12 @@ public class ClientServiceImpl implements ClientService {
 	@Autowired
 	private EmployeeService employeeService;
 
+	@Value(value = "${application.region}")
+	private String REGION;
+
 	@Override
 	public Client getClientById(String id) {
-		return clientRepository.findByClientId(id);
+		return clientRepository.findByClientIdAndRegion(id, REGION);
 	}
 
 	@Override
@@ -65,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public boolean updateClient(Client client, String id) {
-		Client clientEntity = clientRepository.findByClientId(id);
+		Client clientEntity = clientRepository.findByClientIdAndRegion(id, REGION);
 		Client finalClient = null;
 		try {
 			finalClient = (Client) clientEntity.clone();
@@ -89,7 +93,7 @@ public class ClientServiceImpl implements ClientService {
 		logger.info("Going to migrate %s to %s", clientId, status);
 
 		//1. Validate the client
-		Client client = clientRepository.findByClientId(clientId);
+		Client client = clientRepository.findByClientIdAndRegion(clientId, REGION);
 		client.setPremium(status);
 
 		if (client == null) {
@@ -97,7 +101,7 @@ public class ClientServiceImpl implements ClientService {
 			return false;
 		}
 		//2. Fetch all employees on the client
-		List<Employee> employeeList = employeeRepository.getAllByClientId(clientId);
+		List<Employee> employeeList = employeeRepository.getAllByClientIdAndRegion(clientId, REGION);
 
 		employeeList.forEach((employee) -> {
 			employee.setPremium(status);
@@ -111,12 +115,12 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public List<Client> getClientsById(List<String> clientIds) {
-		return clientRepository.findAllByClientIdIn(clientIds);
+		return clientRepository.findAllByClientIdInAndRegion(clientIds, REGION);
 	}
 
 	@Override
 	public Client getClientByName(String name) {
-		return clientRepository.findByClientName(name);
+		return clientRepository.findByClientNameAndRegion(name, REGION);
 	}
 
 }

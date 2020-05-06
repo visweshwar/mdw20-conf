@@ -50,6 +50,10 @@ public class ClientController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<ClientModel> getClient(@PathVariable(value = "id") String id) {
 		ModelMapper modelMapper = new ModelMapper();
+		Client client = clientService.getClientById(id);
+		if (client == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
 		return new ResponseEntity<>(modelMapper.map(clientService.getClientById(id), ClientModel.class), HttpStatus.OK);
 	}
 

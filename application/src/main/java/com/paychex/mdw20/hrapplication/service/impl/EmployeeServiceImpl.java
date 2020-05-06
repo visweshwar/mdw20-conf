@@ -33,6 +33,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /*
@@ -48,9 +49,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private ClientService clientService;
 
+	@Value(value = "${application.region}")
+	private String REGION;
+
 	@Override
 	public Employee getEmployeeById(String id) {
-		return employeeRepository.findByEmployeeId(id);
+		return employeeRepository.findByEmployeeIdAndRegion(id, REGION);
 	}
 
 	@Override
@@ -65,7 +69,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public boolean updateEmployee(Employee employee, String id) {
 
-		Employee employeeEntity = employeeRepository.findByEmployeeId(id);
+		Employee employeeEntity = employeeRepository.findByEmployeeIdAndRegion(id, REGION);
 		Employee finalEmployee = null;
 		try {
 			finalEmployee = (Employee) employeeEntity.clone();

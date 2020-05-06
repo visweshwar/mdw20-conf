@@ -30,12 +30,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 */
 @RepositoryRestResource(collectionResourceRel = "client", path = "client")
 public interface ClientRepository extends MongoRepository<Client, String>, CustomUpdateRepository {
-	Client findByClientId(String id);
+	Client findByClientIdAndRegion(String id, String region);
 
 	void deleteByClientId(String id);
 
-	List<Client> findAllByClientIdIn(List<String> id);
+	List<Client> findAllByClientIdInAndRegion(List<String> id, String region);
 
-	Client findByClientName(String name);
+	Client findByClientNameAndRegion(String name, String region);
 
 }
